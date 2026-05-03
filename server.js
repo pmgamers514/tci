@@ -21,7 +21,7 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://tci:wHG3QdaRs6FEJoAj@cluster.jesf1md.mongodb.net/tci_platform?retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://pmgamers514_db_user:tufPRE9tfOUGM0uC@cluster0.vw6cfsc.mongodb.net/?appName=Cluster0';
 
 // --- Database Connection and Seeding ---
 const initializeDatabase = async () => {
