@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TCI Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+      }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --sticky-header: rgba(10, 10, 10, 0.9);
+        --accent: #3b82f6;
+        --accent-rgb: 59, 130, 246;
+        --text-main: #ffffff;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'Roboto', sans-serif !important;
+        background: #050505;
+        color: var(--text-main);
+        overflow-x: hidden;
+        font-style: normal !important;
+        text-transform: none !important;
+      }
+
+      /* Global Reset for Body Text and its descendants - Normal Case */
+      p, p *, span, span *, div, div *, li, li *, td, td *, th, th *, label, label *, button, button *, input, select, textarea, a, a *, strong, strong *, em, em *, b, b *, i, i *, small, small * {
+        font-family: 'Roboto', sans-serif !important;
+        text-transform: none !important;
+        font-style: normal !important;
+      }
+
+      /* Headings Overrides (Winning over the general reset) */
+      h1, h1 *, .h1-style, .h1-style * {
+        font-family: 'Syne', sans-serif !important;
+        font-weight: 700 !important;
+        text-transform: none !important;
+        font-style: normal !important;
+      }
+
+      h2, h2 *, h3, h3 *, h4, h4 *, h5, h5 *, h6, h6 *, .h2-style, .h2-style *, .h3-style, .h3-style *, .h4-style, .h4-style *, .h5-style, .h5-style *, .h6-style, .h6-style * {
+        font-family: 'Syne', sans-serif !important;
+        font-weight: 700 !important;
+        text-transform: none !important;
+        font-style: normal !important;
+      }
+
+      /* Exception for icons and specific containers */
+      svg, svg *, .no-global-style, .no-global-style *, .no-roboto, .no-roboto * {
+        text-transform: none !important;
+        font-family: inherit !important;
+        font-style: normal !important;
+      }
+
+      /* Utility classes for the requested styles */
+      .heading-style {
+        font-family: 'Syne', sans-serif !important;
+        font-weight: 800 !important;
+        text-transform: none !important;
+        font-style: normal !important;
+      }
+
+      .sub-heading-style {
+        font-family: 'Syne', sans-serif !important;
+        font-weight: 700 !important;
+        text-transform: none !important;
+        font-style: normal !important;
+      }
+
+      .paragraph-style {
+        font-family: 'Roboto', sans-serif !important;
+        text-transform: none !important;
+        font-style: normal !important;
+      }
+      
+      /* Ambient Light Animations */
+      @keyframes ambient-glow {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(1.1); }
+      }
+      .ambient-blob {
+        position: fixed;
+        width: 40vw;
+        height: 40vw;
+        border-radius: 50%;
+        filter: blur(80px);
+        z-index: -1;
+        animation: ambient-glow 10s infinite ease-in-out;
+      }
+      .blob-1 { background: rgba(var(--accent-rgb), 0.2); top: -10%; left: -10%; }
+      .blob-2 { background: rgba(168, 85, 247, 0.2); bottom: -10%; right: -10%; animation-delay: -5s; }
+      
+      /* Glassmorphism */
+      .glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .glass-hover:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+
+      /* Light Mode Logic */
+      .light {
+        --sticky-header: rgba(248, 249, 250, 0.95);
+        --text-main: #0f172a;
+      }
+      .light .glass {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+      }
+      .light .glass-hover:hover {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(0, 0, 0, 0.18);
+      }
+      
+      /* Global Text Fixes for Light Mode */
+      .light .text-white { color: #0f172a !important; }
+      .light .text-white\/5 { color: #e2e8f0 !important; }
+      .light .text-white\/10 { color: #cbd5e1 !important; }
+      .light .text-white\/20 { color: #94a3b8 !important; }
+      .light .text-white\/30 { color: #64748b !important; }
+      .light .text-white\/40 { color: #475569 !important; }
+      .light .text-white\/50 { color: #334155 !important; }
+      .light .text-white\/60 { color: #1e293b !important; }
+      .light .text-white\/70 { color: #1e293b !important; }
+      .light .text-white\/80 { color: #0f172a !important; }
+      .light .text-white\/90 { color: #0f172a !important; }
+
+      /* PRESERVE WHITE TEXT ON COLORED BACKGROUNDS */
+      .light .bg-blue-600, .light .bg-blue-600 *,
+      .light .bg-blue-500, .light .bg-blue-500 *,
+      .light .bg-red-600, .light .bg-red-600 *,
+      .light .bg-red-500, .light .bg-red-500 *,
+      .light .bg-green-600, .light .bg-green-600 *,
+      .light .bg-green-500, .light .bg-green-500 *,
+      .light .bg-\[var\(--accent\)\], .light .bg-\[var\(--accent\)\] *,
+      .light .bg-purple-600, .light .bg-purple-600 *,
+      .light .bg-black, .light .bg-black * {
+        color: #ffffff !important;
+      }
+
+      /* Modal Overlay Fixes for Light Mode */
+      .light .bg-black\/90, 
+      .light .bg-black\/95 { 
+        background-color: rgba(255, 255, 255, 0.92) !important; 
+        backdrop-filter: blur(10px);
+      }
+      .light .bg-white\/5 { background-color: rgba(0, 0, 0, 0.05) !important; }
+      .light .bg-white\/10 { background-color: rgba(0, 0, 0, 0.08) !important; }
+
+      /* CRITICAL: Ensure bg-white is actually white in light mode */
+      .light .bg-white { background-color: #ffffff !important; color: #0f172a !important; }
+      .light .bg-white.text-black { color: #000000 !important; }
+      .light button.bg-white { background-color: #ffffff !important; color: #0f172a !important; }
+
+      /* Prism Code Editor Theme */
+      code[class*="language-"], pre[class*="language-"] { color: #ccc; background: none; font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; font-size: 14px; text-align: left; white-space: pre; word-spacing: normal; word-break: normal; word-wrap: normal; line-height: 1.5; tab-size: 4; hyphens: none; }
+      pre[class*="language-"] { padding: 1em; margin: .5em 0; overflow: auto; }
+      :not(pre) > code[class*="language-"], pre[class*="language-"] { background: #2d2d2d; }
+      .token.comment, .token.prolog, .token.doctype, .token.cdata { color: #999; }
+      .token.punctuation { color: #ccc; }
+      .token.namespace { opacity: .7; }
+      .token.property, .token.tag, .token.boolean, .token.number, .token.constant, .token.symbol, .token.deleted { color: #905; }
+      .token.selector, .token.attr-name, .token.string, .token.char, .token.builtin, .token.inserted { color: #690; }
+      .token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string { color: #9a6e3a; }
+      .token.atrule, .token.attr-value, .token.keyword { color: #07a; }
+      .token.function, .token.class-name { color: #dd4a68; }
+      .token.regex, .token.important, .token.variable { color: #e90; }
+      .token.important, .token.bold { font-weight: bold; }
+      .token.italic { font-style: italic; }
+
+      /* Sidebar Visibility Fixes */
+      .light aside { background: rgba(255, 255, 255, 0.95); border-right: 1px solid rgba(0, 0, 0, 0.05); }
+      .light aside .text-white\/40 { color: #64748b !important; }
+      
+      /* Input fixes in light mode */
+      .light input, .light textarea { 
+        background-color: rgba(0, 0, 0, 0.03) !important; 
+        color: #0f172a !important; 
+        border-color: rgba(0, 0, 0, 0.1) !important;
+      }
+      .light input::placeholder, .light textarea::placeholder { color: #94a3b8 !important; }
+
+      /* Scrollbar Styling */
+      ::-webkit-scrollbar { width: 4px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+      .light ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
+
+      /* Lesson Content HTML Styling */
+      .lesson-content-html {
+        font-family: 'Roboto', sans-serif !important;
+        line-height: 1.8 !important;
+      }
+      .lesson-content-html h1 { font-family: 'Syne', sans-serif !important; font-size: 2rem !important; font-weight: 800 !important; margin-bottom: 1.5rem !important; color: white !important; }
+      .lesson-content-html h2 { font-family: 'Syne', sans-serif !important; font-size: 1.5rem !important; font-weight: 700 !important; margin-top: 2rem !important; margin-bottom: 1rem !important; color: white !important; }
+      .lesson-content-html h3 { font-family: 'Syne', sans-serif !important; font-size: 1.25rem !important; font-weight: 600 !important; margin-top: 1.5rem !important; margin-bottom: 0.75rem !important; color: white !important; }
+      .lesson-content-html p { margin-bottom: 1.25rem !important; color: rgba(255,255,255,0.7) !important; }
+      .lesson-content-html ul, .lesson-content-html ol { margin-bottom: 1.25rem !important; padding-left: 1.5rem !important; color: rgba(255,255,255,0.7) !important; }
+      .lesson-content-html ul { list-style-type: disc !important; }
+      .lesson-content-html ol { list-style-type: decimal !important; }
+      .lesson-content-html li { margin-bottom: 0.5rem !important; }
+      .lesson-content-html strong { color: white !important; font-weight: 700 !important; }
+      .lesson-content-html blockquote { border-left: 4px solid var(--accent) !important; padding-left: 1.5rem !important; font-style: italic !important; margin: 2rem 0 !important; }
+      .lesson-content-html table { width: 100% !important; border-collapse: collapse !important; margin: 1.5rem 0 !important; }
+      .lesson-content-html th, .lesson-content-html td { border: 1px solid rgba(255,255,255,0.1) !important; padding: 0.75rem !important; }
+      .lesson-content-html th { background: rgba(255,255,255,0.05) !important; font-weight: bold !important; text-align: left !important; }
+      .lesson-content-html img { max-width: 100% !important; border-radius: 1rem !important; margin: 2rem 0 !important; }
+
+      .light .lesson-content-html h1, 
+      .light .lesson-content-html h2, 
+      .light .lesson-content-html h3,
+      .light .lesson-content-html strong { 
+        color: #0f172a !important; 
+      }
+      .light .lesson-content-html p,
+      .light .lesson-content-html ul,
+      .light .lesson-content-html ol {
+        color: #334155 !important;
+      }
+      .light .lesson-content-html th, .light .lesson-content-html td { 
+        border: 1px solid rgba(0,0,0,0.1) !important; 
+      }
+      .light .lesson-content-html th {
+        background: rgba(0,0,0,0.02) !important;
+      }
+    </style>
+
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom": "https://esm.sh/react-dom@^19.2.4",
+    "react-dom/client": "https://esm.sh/react-dom@^19.2.4/client",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.13.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "express": "https://esm.sh/express@^5.2.1",
+    "mongoose": "https://esm.sh/mongoose@^9.1.5",
+    "cors": "https://esm.sh/cors@^2.8.6",
+    "bcryptjs": "https://esm.sh/bcryptjs@^3.0.3",
+    "jsonwebtoken": "https://esm.sh/jsonwebtoken@^9.0.3"
+  }
+}
+</script>
+  <script type="module" crossorigin src="/assets/index-DYGlx36H.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CfZ7kyuK.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <div class="ambient-blob blob-1"></div>
+    <div class="ambient-blob blob-2"></div>
+  </body>
+</html>
