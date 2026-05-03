@@ -70,7 +70,7 @@ const UserSchema = new mongoose.Schema({
   profileImage: String,
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   isPaid: { type: Boolean, default: false },
-  plan: { type: String, enum: ['General Transcription', 'Legal Transcription', 'General & Legal Transcription'], default: 'General Transcription' },
+  plan: { type: String, enum: ['General', 'Legal', 'Combo', 'General Transcription', 'Legal Transcription', 'Combo (General+Legal)'], default: 'General Transcription' },
   studentId: { type: String, default: () => `TCI-${Math.floor(10000 + Math.random() * 90000)}` },
   joinedDate: { type: String, default: () => new Date().toISOString().split('T')[0] },
   completedLessons: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' }],
@@ -140,7 +140,6 @@ const QuizSchema = new mongoose.Schema({
 
 const FinalExamSchema = new mongoose.Schema({
   title: { type: String, default: 'TCI Final Certification Exam' },
-  category: { type: String, enum: ['general', 'legal', 'general_legal'], default: 'general' },
   mcqs: [{ question: String, options: [String], correctAnswer: Number }],
   transcriptionAudioUrl: String,
   transcriptionCorrectText: String
@@ -267,7 +266,7 @@ const seedCourses = async () => {
       status: 'active'
     },
     {
-      title: 'General & Legal Transcription',
+      title: 'Combo (General + Legal)',
       description: 'The ultimate professional package. Get both General and Legal transcription certifications at a discounted bundled rate.',
       price: 399,
       status: 'active'
@@ -451,9 +450,7 @@ app.get('/api/admin/submissions', authenticateToken, isAdmin, async (req, res) =
 
 app.get('/api/final-exam', async (req, res) => {
   try {
-    const { category } = req.query;
-    const filter = category ? { category } : {};
-    const exam = await FinalExam.findOne(filter);
+    const exam = await FinalExam.findOne();
     res.json(normalizeId(exam));
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -489,13 +486,13 @@ app.post('/api/payment', authenticateToken, async (req, res) => {
     
     let amount = 149.00;
     let courseTitle = 'General Transcription Certification';
-    if (user.plan?.toLowerCase().includes('legal') && !user.plan?.toLowerCase().includes('general')) {
+    if (user.plan === 'Legal') {
       amount = 249.00;
       courseTitle = 'Legal Transcription Certification';
     }
-    if (user.plan?.toLowerCase().includes('legal') && user.plan?.toLowerCase().includes('general')) {
+    if (user.plan === 'Combo') {
       amount = 299.00;
-      courseTitle = 'General & Legal Transcription Certification';
+      courseTitle = 'Combo (General + Legal) Certification';
     }
 
     await Enrollment.findOneAndUpdate(
@@ -767,9 +764,8 @@ app.delete('/api/quizzes/:id', authenticateToken, isAdmin, async (req, res) => {
 // Final Exam Update
 app.put('/api/final-exam', authenticateToken, isAdmin, async (req, res) => {
   try {
-    const { category, ...examData } = req.body;
-    const filter = category ? { category } : {};
-    const exam = await FinalExam.findOneAndUpdate(filter, { ...examData, category: category || 'general' }, { new: true, upsert: true });
+    const examData = req.body;
+    const exam = await FinalExam.findOneAndUpdate({}, examData, { new: true, upsert: true });
     res.json(normalizeId(exam));
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -892,13 +888,15 @@ async function startServer() {
       appType: 'spa',
     });
     app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
-  }
+} else {
+  const distPath = path.join(process.cwd(), 'dist');
+  app.use(express.static(distPath));
+
+  // FIXED catch-all route
+  app.get(/.*/, (req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
+}
 
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
